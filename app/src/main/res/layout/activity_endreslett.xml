@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.example.kartapp.LagreActivity" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tittelServerdighet"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Lagre ny serverdighet"
+                android:textSize="35sp" />
+
+            <TextView
+                android:id="@+id/servId"
+                android:layout_width="match_parent"
+                android:layout_height="0sp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/serLatitude"
+                android:layout_width="match_parent"
+                android:layout_height="0sp"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/serLangitude"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="invisible" />
+
+            <TextView
+                android:id="@+id/tittelAddresse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Gate addresse"
+                android:textSize="26sp" />
+
+            <EditText
+                android:id="@+id/gateAddresse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:editable="false"
+                android:ems="10" />
+
+            <TextView
+                android:id="@+id/tittelBeskrivelse"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Beskrivelse"
+                android:textSize="26sp" />
+
+            <EditText
+                android:id="@+id/beskrivelseInp"
+                android:layout_width="match_parent"
+                android:layout_height="250sp"
+                android:ems="10"
+                android:gravity="start|top"
+                android:inputType="textMultiLine" />
+
+            <Button
+                android:id="@+id/endreBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#DAA813"
+                android:text="Endre"
+                android:textColor="#FFFFFF" />
+
+            <Button
+                android:id="@+id/button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Slett" />
+
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
