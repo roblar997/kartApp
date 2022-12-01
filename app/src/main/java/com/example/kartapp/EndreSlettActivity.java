@@ -61,11 +61,12 @@ public class EndreSlettActivity extends AppCompatActivity implements
     String lat;
     String lng;
     String gateaddresse;
+    String beskrivelse;
     EditText beskrivelseInp;
     LatLng tmpPoint;
     EditText gateAddresseTxtEdit;
-    Button leggtilBtn;
-
+    Button endreBtn;
+    Button deleteBtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,16 +78,28 @@ public class EndreSlettActivity extends AppCompatActivity implements
         lat = getIntent().getStringExtra("lat");
         lng = getIntent().getStringExtra("lng");
         gateaddresse = getIntent().getStringExtra("gateadresse");
+        beskrivelse = getIntent().getStringExtra("beskrivelse");
+
         gateAddresseTxtEdit = (EditText) findViewById(R.id.gateAddresse);
         beskrivelseInp = (EditText) findViewById(R.id.beskrivelseInp);
-        leggtilBtn = (Button) findViewById(R.id.endreBtn);
-
-        leggtilBtn.setOnClickListener(new View.OnClickListener() {
+        endreBtn = (Button) findViewById(R.id.endreBtn);
+        deleteBtn = (Button) findViewById(R.id.deleteBtn);
+        gateAddresseTxtEdit.setText(gateaddresse);
+        beskrivelseInp.setText(beskrivelse);
+        endreBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 String beskrivelse = String.valueOf(beskrivelseInp.getText());
-                createJSON task = new createJSON(lat,lng,gateaddresse,beskrivelse);
+                updateJSON task = new updateJSON(lat,lng,gateaddresse,beskrivelse);
+                task.execute();
+            }
+        });
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                deleteJson task = new deleteJson(lat,lng);
                 task.execute();
             }
         });
@@ -138,15 +151,72 @@ public class EndreSlettActivity extends AppCompatActivity implements
         DialogFragment dialog = new MyDialog();
         dialog.show(getSupportFragmentManager(),"Avslutt");}
 
+    private class deleteJson extends AsyncTask<String, Void,String> {
+        JSONObject jsonObject;
+        String lat;
+        String lng;
 
-    private class createJSON extends AsyncTask<String, Void,String> {
+
+        public deleteJson(String lat, String lng) {
+
+            this.lat = lat;
+            this.lng = lng;
+
+        }
+
+
+        @Override
+        protected String doInBackground(String... urls) {
+            String retur = "";
+            String s = "";
+            String output = "";
+
+            try{
+                URL urlen= new URL("http://192.168.242.77:82/jsonDelete.php?lat="+lat+"&lng="+lng);
+                HttpURLConnection conn= (HttpURLConnection)
+                        urlen.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+                if (conn.getResponseCode() != 200) {
+                    System.out.println(conn.getResponseCode());
+                    throw new RuntimeException("Failed : HTTP errorcode: "
+                            + conn.getResponseCode());
+                }
+                System.out.println("Before reading... .... \n");
+                BufferedReader br= new BufferedReader(new InputStreamReader((conn.getInputStream())));
+                System.out.println("Output from Server .... \n");
+                while ((s = br.readLine()) != null) {
+                    output = output + s;
+                }
+                conn.disconnect();
+                try{
+                    JSONArray mat = new JSONArray(output);
+
+
+                    return mat.toString();
+                } catch(JSONException e) {
+                    e.printStackTrace();
+                }
+                return retur;
+            } catch(Exception e) {
+                return e.getLocalizedMessage();
+            }
+
+
+        }
+        @Override
+        protected void onPostExecute(String ss) {
+
+        }
+    }
+    private class updateJSON extends AsyncTask<String, Void,String> {
         JSONObject jsonObject;
         String lat;
         String lng;
         String gateaddresse;
         String beskrivelse;
 
-        public createJSON(String lat, String lng, String gateaddresse,String beskrivelse) {
+        public updateJSON(String lat, String lng, String gateaddresse,String beskrivelse) {
 
             this.lat = lat;
             this.lng = lng;
@@ -162,7 +232,7 @@ public class EndreSlettActivity extends AppCompatActivity implements
             String output = "";
 
             try{
-                URL urlen= new URL("http://192.168.63.77:82/jsonin.php?lat="+lat+"&lng="+lng+"&gateadresse="+gateaddresse+"&beskrivelse="+beskrivelse);
+                URL urlen= new URL("http://192.168.242.77:82/jsonUpdate.php?lat="+lat+"&lng="+lng+"&gateadresse="+gateaddresse.replaceAll(" ","%20")+"&beskrivelse="+beskrivelse.replaceAll(" ","%20"));
                 HttpURLConnection conn= (HttpURLConnection)
                         urlen.openConnection();
                 conn.setRequestMethod("GET");

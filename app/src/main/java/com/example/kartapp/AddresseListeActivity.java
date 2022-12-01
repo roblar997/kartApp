@@ -148,6 +148,9 @@ public class AddresseListeActivity extends AppCompatActivity implements
         protected List<String> doInBackground(Void... params) {
             String s = "";
             String output = "";
+            if(lokasjon == null)
+                return new ArrayList<String>();
+
             String lat = lokasjon.split(":")[0].replaceAll(",", ".");
             String lng = lokasjon.split(":")[1].replaceAll(",", ".");
             String query = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&key=AIzaSyA7kkXcZ4w6rEBFWJy2X0dWuMzC9g_rJjk";

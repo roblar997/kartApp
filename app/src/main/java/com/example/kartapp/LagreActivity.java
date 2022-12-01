@@ -162,7 +162,7 @@ public class LagreActivity extends AppCompatActivity implements
             String output = "";
 
                 try{
-                    URL urlen= new URL("http://192.168.63.77:82/jsonin.php?lat="+lat+"&lng="+lng+"&gateadresse="+gateaddresse+"&beskrivelse="+beskrivelse);
+                    URL urlen= new URL("http://192.168.242.77:82/jsonin.php?lat="+lat+"&lng="+lng+"&gateadresse="+gateaddresse+"&beskrivelse="+beskrivelse);
                     HttpURLConnection conn= (HttpURLConnection)
                             urlen.openConnection();
                     conn.setRequestMethod("GET");

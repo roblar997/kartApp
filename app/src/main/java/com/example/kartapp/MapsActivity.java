@@ -33,6 +33,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -69,10 +70,12 @@ public class MapsActivity extends AppCompatActivity implements
     TextView koordinater;
     String minadresse;
     LatLng tmpPoint;
+    Marker tmpMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_maps);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
@@ -127,12 +130,52 @@ public class MapsActivity extends AppCompatActivity implements
     }
     @Override
     public void onEndreClick() {
-        return;
+        LatLng latlng = this.tmpMarker.getPosition();
+        Intent intentEndreSlett = new Intent(MapsActivity.this, EndreSlettActivity.class);
+        intentEndreSlett.putExtra("gateadresse", this.tmpMarker.getTitle());
+        intentEndreSlett.putExtra("beskrivelse",this.tmpMarker.getSnippet());
+        intentEndreSlett.putExtra("lat",Double.toString(latlng.latitude));
+        intentEndreSlett.putExtra("lng",Double.toString(latlng.longitude));
+
+        startActivity(intentEndreSlett);
     }
 
     @Override
     public void onSlettClick() {
-        return;
+        LatLng latlng = this.tmpMarker.getPosition();
+        deleteJson task = new deleteJson(Double.toString(latlng.latitude),Double.toString(latlng.longitude));
+        task.execute();
+        mMap.clear();
+        getJSON getJSONTask = new getJSON();
+        try {
+            String res = getJSONTask.execute(new String[]{"http://192.168.242.77:82/jsonout.php"}).get();
+            System.out.println(res);
+            JSONArray jsonObject = new JSONArray(res);
+            for (int i = 0; i < jsonObject.length(); i++) {
+                JSONObject jsonobject = jsonObject.getJSONObject(i);
+                double lng = jsonobject.getDouble("lat");
+                double lat = jsonobject.getDouble("lng");
+                String beskrivelse = jsonobject.getString("beskrivelse");
+                String gateadresse = jsonobject.getString("gateadresse");
+                LatLng latLng = new LatLng(lng, lat);
+                System.out.println(beskrivelse);
+                MarkerOptions options = new MarkerOptions()
+                        .position(latLng)
+                        .title(gateadresse)
+                        .snippet(beskrivelse);
+
+                Marker markerMoreInfo = mMap.addMarker(options);
+                mMap.setOnMarkerClickListener(this);
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            }
+
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -143,11 +186,68 @@ public class MapsActivity extends AppCompatActivity implements
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
         visEndreSlettDialog(null);
-
+        this.tmpMarker = marker;
         return false;
     }
 
+    private class deleteJson extends AsyncTask<String, Void,String> {
+        JSONObject jsonObject;
+        String lat;
+        String lng;
 
+
+        public deleteJson(String lat, String lng) {
+
+            this.lat = lat;
+            this.lng = lng;
+
+        }
+
+
+        @Override
+        protected String doInBackground(String... urls) {
+            String retur = "";
+            String s = "";
+            String output = "";
+
+            try{
+                URL urlen= new URL("http://192.168.242.77:82/jsonDelete.php?lat="+lat+"&lng="+lng);
+                HttpURLConnection conn= (HttpURLConnection)
+                        urlen.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+                if (conn.getResponseCode() != 200) {
+                    System.out.println(conn.getResponseCode());
+                    throw new RuntimeException("Failed : HTTP errorcode: "
+                            + conn.getResponseCode());
+                }
+                System.out.println("Before reading... .... \n");
+                BufferedReader br= new BufferedReader(new InputStreamReader((conn.getInputStream())));
+                System.out.println("Output from Server .... \n");
+                while ((s = br.readLine()) != null) {
+                    output = output + s;
+                }
+                conn.disconnect();
+                try{
+                    JSONArray mat = new JSONArray(output);
+
+
+                    return mat.toString();
+                } catch(JSONException e) {
+                    e.printStackTrace();
+                }
+                return retur;
+            } catch(Exception e) {
+                return e.getLocalizedMessage();
+            }
+
+
+        }
+        @Override
+        protected void onPostExecute(String ss) {
+
+        }
+    }
     private class getJSON extends AsyncTask<String, Void, String> {
         JSONObject jsonObject;
 
@@ -158,7 +258,7 @@ public class MapsActivity extends AppCompatActivity implements
             String output = "";
             for (String url : urls) {
                 try {
-                    URL urlen = new URL("http://192.168.63.77:82/jsonout.php");
+                    URL urlen = new URL(urls[0]);
                     HttpURLConnection conn = (HttpURLConnection)
                             urlen.openConnection();
                     conn.setRequestMethod("GET");
@@ -321,7 +421,8 @@ public class MapsActivity extends AppCompatActivity implements
         mMap = googleMap;
         getJSON task = new getJSON();
         try {
-            String res = task.execute(new String[]{"http://localhost:82/jsonout.php"}).get();
+            String res = task.execute(new String[]{"http://192.168.242.77:82/jsonout.php"}).get();
+            System.out.println(res);
             JSONArray jsonObject = new JSONArray(res);
             for (int i = 0; i < jsonObject.length(); i++) {
                 JSONObject jsonobject = jsonObject.getJSONObject(i);
