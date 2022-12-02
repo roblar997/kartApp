@@ -104,7 +104,7 @@ public class EndreSlettActivity extends AppCompatActivity implements
         gateAddresseTxtEdit = (EditText) findViewById(R.id.gateAddresse);
         beskrivelseInp = (EditText) findViewById(R.id.beskrivelseInp);
         endreBtn = (Button) findViewById(R.id.endreBtn);
-        Button deleteBtn = (Button) findViewById(R.id.resetBtn);
+        Button resetBtn = (Button) findViewById(R.id.resetBtn);
         deleteBtn = (Button) findViewById(R.id.deleteBtn);
         gateAddresseTxtEdit.setText(gateaddresse);
         beskrivelseInp.setText(beskrivelse);
