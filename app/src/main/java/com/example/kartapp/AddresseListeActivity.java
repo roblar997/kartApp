@@ -107,6 +107,8 @@ public class AddresseListeActivity extends AppCompatActivity implements
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             ));
+            velg.setTextColor(Color.BLACK);
+            velg.setBackgroundColor(Color.parseColor("#8BC34A"));
             velg.setText("Velg");
             velg.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -262,64 +264,7 @@ public class AddresseListeActivity extends AppCompatActivity implements
         return;
     }
 
-    public void visDialog(View v) {
-        String lokasjon = String.valueOf(tmpPoint.latitude) + "," + String.valueOf(tmpPoint.longitude);
-        GetAddressTask task = new GetAddressTask(lokasjon);
-        System.out.println(lokasjon);
-        task.execute();
-        DialogFragment dialog = new MyDialog();
-        dialog.show(getSupportFragmentManager(), "Avslutt");
-    }
 
-
-    private class getJSON extends AsyncTask<String, Void, String> {
-        JSONObject jsonObject;
-
-        @Override
-        protected String doInBackground(String... urls) {
-            String retur = "";
-            String s = "";
-            String output = "";
-            for (String url : urls) {
-                try {
-                    URL urlen = new URL("http://192.168.100.77:82/jsonout.php");
-                    HttpURLConnection conn = (HttpURLConnection)
-                            urlen.openConnection();
-                    conn.setRequestMethod("GET");
-                    conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
-                    if (conn.getResponseCode() != 200) {
-                        System.out.println(conn.getResponseCode());
-                        throw new RuntimeException("Failed : HTTP errorcode: "
-                                + conn.getResponseCode());
-                    }
-                    System.out.println("Before reading... .... \n");
-                    BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
-                    System.out.println("Output from Server .... \n");
-                    while ((s = br.readLine()) != null) {
-                        output = output + s;
-                    }
-                    conn.disconnect();
-                    try {
-                        JSONArray mat = new JSONArray(output);
-
-
-                        return mat.toString();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                    return retur;
-                } catch (Exception e) {
-                    return e.getLocalizedMessage();
-                }
-            }
-            return retur;
-        }
-
-        @Override
-        protected void onPostExecute(String ss) {
-            textView.setText(ss);
-        }
-    }
 
 
     private LocationCallback mLocationCallback = new LocationCallback() {

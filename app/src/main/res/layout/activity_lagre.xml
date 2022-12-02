@@ -72,12 +72,11 @@
                 android:inputType="textMultiLine" />
 
             <Button
-                android:id="@+id/endreBtn"
+                android:id="@+id/lagreBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="#DAA813"
-                android:text="Legg til"
-                android:textColor="#FFFFFF" />
+                android:backgroundTint="#8BC34A"
+                android:text="Lagre" />
 
         </LinearLayout>
     </ScrollView>

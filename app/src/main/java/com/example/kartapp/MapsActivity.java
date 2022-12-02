@@ -65,11 +65,13 @@ public class MapsActivity extends AppCompatActivity implements
     private LocationRequest mLocationRequest;
     private GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationClient;
-    private TextView textView;
-    EditText lokasjon;
-    TextView koordinater;
-    String minadresse;
+
     LatLng tmpPoint;
+    Button sokBtn;
+    Button resetZoomBtn;
+    Button zoomInBtn;
+    Button zoomOutBtn;
+    EditText adresseInp;
     Marker tmpMarker;
 
     @Override
@@ -82,7 +84,59 @@ public class MapsActivity extends AppCompatActivity implements
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        sokBtn = (Button) findViewById(R.id.sokBtn);
+        resetZoomBtn = (Button) findViewById(R.id.resetZoomBtn);
+        zoomInBtn = (Button) findViewById(R.id.zoomInBtn);
+        zoomOutBtn = (Button) findViewById(R.id.zoomOutBtn);
+        adresseInp = (EditText) findViewById(R.id.adresseInp);
+        resetZoomBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.moveCamera(CameraUpdateFactory.zoomTo(1));
 
+            };
+            });
+        zoomInBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.moveCamera(CameraUpdateFactory.zoomBy(1));
+
+            };
+        });
+        zoomOutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.moveCamera(CameraUpdateFactory.zoomBy(-1));
+
+            };
+        });
+
+
+        sokBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String adresse = adresseInp.getText().toString();
+                GetLocationTask task = new GetLocationTask(adresse);
+                CameraUpdateFactory.zoomTo(12);
+                try {
+                    String lokasjon =task.execute().get();
+                    if(lokasjon != null){
+                        String lat = lokasjon.split(":")[0];
+                        String lng = lokasjon.split(":")[1];
+                        LatLng latlng = new LatLng(Double.parseDouble(lat),Double.parseDouble(lng));
+                        mMap.moveCamera(CameraUpdateFactory.zoomTo(16));
+                        mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
+                    }
+
+
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -297,11 +351,6 @@ public class MapsActivity extends AppCompatActivity implements
         }
     }
 
-    public void hentkoordinater(View v) {
-        minadresse = lokasjon.getText().toString();
-        GetLocationTask hentadresser = new GetLocationTask(minadresse);
-        hentadresser.execute();
-    }
 
     private LocationCallback mLocationCallback = new LocationCallback() {
 
@@ -475,8 +524,8 @@ public class MapsActivity extends AppCompatActivity implements
         protected String doInBackground(Void... params) {
             String s = "";
             String output = "";
-            String query = "https://maps.googleapis.com/maps/api/geocode/json?";
-            address = address.replaceAll(" ", "%20") + "&key=AIzaSyA7kkXcZ4w6rEBFWJy2X0dWuMzC9g_rJjk";
+            String query = "https://maps.googleapis.com/maps/api/geocode/json?address="+
+             address.replaceAll(" ", "%20") + "&key=AIzaSyA7kkXcZ4w6rEBFWJy2X0dWuMzC9g_rJjk";
             try {
                 URL urlen = new URL(query);
                 HttpURLConnection conn = (HttpURLConnection) urlen.openConnection();
@@ -493,14 +542,14 @@ public class MapsActivity extends AppCompatActivity implements
                 }
                 jsonObject = new JSONObject(output.toString());
                 conn.disconnect();
-                Double lon = Double.valueOf(0);
+                Double lng = Double.valueOf(0);
                 Double lat = Double.valueOf(0);
-                lon =
+                lng =
                         ((JSONArray)
                                 jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
                 lat = ((JSONArray)
                         jsonObject.get("results")).getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
-                lokasjon = String.valueOf(lon) + " : " + String.valueOf(lat);
+                lokasjon = String.valueOf(lat) + " : " + String.valueOf(lng);
                 return lokasjon;
             } catch (IOException ex) {
                 ex.printStackTrace();

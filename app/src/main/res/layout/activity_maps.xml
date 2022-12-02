@@ -28,21 +28,43 @@
                 android:id="@+id/textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Søk etter adresse" />
+                android:text="Søk etter adresse"
+                android:textSize="32sp" />
 
             <EditText
-                android:id="@+id/addresseInput"
+                android:id="@+id/adresseInp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:inputType="textPersonName"
                 android:text="Name" />
 
             <Button
-                android:id="@+id/button3"
+                android:id="@+id/sokBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="#03A9F4"
                 android:text="Søk" />
+
+            <Button
+                android:id="@+id/zoomInBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#03A9F4"
+                android:text="Zoom in" />
+
+            <Button
+                android:id="@+id/zoomOutBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#03A9F4"
+                android:text="Zoom out" />
+
+            <Button
+                android:id="@+id/resetZoomBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#03A9F4"
+                android:text="RESET ZOOM" />
 
         </LinearLayout>
     </ScrollView>

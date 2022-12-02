@@ -79,7 +79,7 @@ public class LagreActivity extends AppCompatActivity implements
         gateaddresse = getIntent().getStringExtra("gateadresse");
         gateAddresseTxtEdit = (EditText) findViewById(R.id.gateAddresse);
         beskrivelseInp = (EditText) findViewById(R.id.beskrivelseInp);
-        leggtilBtn = (Button) findViewById(R.id.endreBtn);
+        leggtilBtn = (Button) findViewById(R.id.lagreBtn);
 
         leggtilBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,8 +117,9 @@ public class LagreActivity extends AppCompatActivity implements
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                Intent mainIntent2= new Intent(LagreActivity.this, AddresseListeActivity.class);
-                startActivity(mainIntent2);
+                Intent backIntent= new Intent(LagreActivity.this, AddresseListeActivity.class);
+                backIntent.putExtra("lokasjon",lat + ":" + lng);
+                startActivity(backIntent);
                 return true;
 
 
@@ -133,10 +134,7 @@ public class LagreActivity extends AppCompatActivity implements
     @Override
     public void onNoClick() {return; }
 
-    public void visDialog(View v){
 
-        DialogFragment dialog = new MyDialog();
-        dialog.show(getSupportFragmentManager(),"Avslutt");}
 
 
     private class createJSON extends AsyncTask<String, Void,String> {

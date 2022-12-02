@@ -21,7 +21,7 @@
                 android:id="@+id/tittelServerdighet"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Lagre ny serverdighet"
+                android:text="Endre serverdighet"
                 android:textSize="35sp" />
 
             <TextView
@@ -83,6 +83,7 @@
                 android:id="@+id/deleteBtn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:backgroundTint="#D84036"
                 android:text="Slett" />
 
         </LinearLayout>
