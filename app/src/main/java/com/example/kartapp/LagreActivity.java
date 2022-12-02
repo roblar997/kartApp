@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
@@ -23,6 +24,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.kartapp.database.DbHandlerSeverdighet;
+import com.example.kartapp.database.models.Severdighet;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -45,6 +48,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
 public class LagreActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
@@ -62,16 +66,26 @@ public class LagreActivity extends AppCompatActivity implements
     String lng;
     String gateaddresse;
     EditText beskrivelseInp;
+    TextView responsTekst;
     LatLng tmpPoint;
     EditText gateAddresseTxtEdit;
     Button leggtilBtn;
 
+    DbHandlerSeverdighet dbHelperSeverdighet;
+    SQLiteDatabase db;
+
+    public void leggtilSeverdighetDB(){
+        Severdighet severdighet = new Severdighet(Double.parseDouble(lat),Double.parseDouble(lng),gateaddresse,beskrivelseInp.getText().toString());
+        dbHelperSeverdighet.leggTilSeverdighet(db,severdighet);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lagre);
         ActionBar actionBar = getSupportActionBar();
-
+        dbHelperSeverdighet = new DbHandlerSeverdighet(this);
+        db=dbHelperSeverdighet.getWritableDatabase();
+        dbHelperSeverdighet.onCreate(db);
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         lat = getIntent().getStringExtra("lat");
@@ -79,6 +93,7 @@ public class LagreActivity extends AppCompatActivity implements
         gateaddresse = getIntent().getStringExtra("gateadresse");
         gateAddresseTxtEdit = (EditText) findViewById(R.id.gateAddresse);
         beskrivelseInp = (EditText) findViewById(R.id.beskrivelseInp);
+        responsTekst = (TextView) findViewById(R.id.responsTekst);
         leggtilBtn = (Button) findViewById(R.id.lagreBtn);
 
         leggtilBtn.setOnClickListener(new View.OnClickListener() {
@@ -88,6 +103,8 @@ public class LagreActivity extends AppCompatActivity implements
                 String beskrivelse = String.valueOf(beskrivelseInp.getText());
                 createJSON task = new createJSON(lat,lng,gateaddresse,beskrivelse);
                 task.execute();
+                leggtilSeverdighetDB();
+                responsTekst.setText("Severdigheten er lagret");
             }
         });
         gateAddresseTxtEdit.setText(gateaddresse);
@@ -169,6 +186,18 @@ public class LagreActivity extends AppCompatActivity implements
                         System.out.println(conn.getResponseCode());
                         throw new RuntimeException("Failed : HTTP errorcode: "
                                 + conn.getResponseCode());
+                    }
+                    else{
+                        List<Severdighet> severdighetList = dbHelperSeverdighet.finnAlleSeverdigheter(db);
+                        JSONArray jsonArray = new JSONArray();
+                        for (int i = 0; i < severdighetList.size(); i++){
+                            JSONObject myJsonObject = new JSONObject();
+                            myJsonObject.put("lat", severdighetList.get(i).getLat());
+                            myJsonObject.put("lng",  severdighetList.get(i).getLng());
+                            myJsonObject.put("gateadresse",  severdighetList.get(i).getGateadresse());
+                            myJsonObject.put("beskrivelse",  severdighetList.get(i).getBeskrivelse());
+
+                        }
                     }
                     System.out.println("Before reading... .... \n");
                     BufferedReader br= new BufferedReader(new InputStreamReader((conn.getInputStream())));
@@ -322,5 +351,9 @@ public class LagreActivity extends AppCompatActivity implements
     };
 
 
-
+    @Override
+    protected void onDestroy() {
+        dbHelperSeverdighet.close();
+        super.onDestroy();
+    }
     }

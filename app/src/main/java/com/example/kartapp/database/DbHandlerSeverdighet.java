@@ -40,7 +40,7 @@ public class DbHandlerSeverdighet extends SQLiteOpenHelper {
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String LAG_TABELL = "CREATE TABLE IF NOT EXISTS " + TABLE_SEVERDIGHETER+ "(" + KEY_LAT +" DOUBLE," + KEY_LNG + "DOUBLE," + KEY_GATEADRESSE + " TEXT," + KEY_BESKRIVELSE + " TEXT,"
+        String LAG_TABELL = "CREATE TABLE IF NOT EXISTS " + TABLE_SEVERDIGHETER+ "(" + KEY_LAT +" DOUBLE," + KEY_LNG + " DOUBLE," + KEY_GATEADRESSE + " TEXT," + KEY_BESKRIVELSE + " TEXT,"
                 + "PRIMARY KEY (" + KEY_LAT + "," + KEY_LNG + "))";
 
         Log.d("SQL", LAG_TABELL);
@@ -48,7 +48,7 @@ public class DbHandlerSeverdighet extends SQLiteOpenHelper {
     }
     public void slettSeverdighet(SQLiteDatabase db, Double inn_lat, Double inn_lng) {
 
-        db.delete(TABLE_SEVERDIGHETER , KEY_LAT + " = ? AND" + KEY_LNG,
+        db.delete(TABLE_SEVERDIGHETER , KEY_LAT + " = ? AND " + KEY_LNG + " = ?",
                 new String[]{Double.toString(inn_lat),Double.toString(inn_lng)});
     }
 
@@ -61,7 +61,7 @@ public class DbHandlerSeverdighet extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             do {
                 Severdighet severdighet = new Severdighet();
-                severdighet.setLng(cursor.getDouble(0));
+                severdighet.setLat(cursor.getDouble(0));
                 severdighet.setLng(cursor.getDouble(1));
                 severdighet.setGateadresse(cursor.getString(2));
                 severdighet.setBeskrivelse(cursor.getString(3));

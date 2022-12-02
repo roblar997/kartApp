@@ -25,6 +25,13 @@
                 android:textSize="35sp" />
 
             <TextView
+                android:id="@+id/responsTekst"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#4CAF50"
+                android:textSize="24sp" />
+
+            <TextView
                 android:id="@+id/servId"
                 android:layout_width="match_parent"
                 android:layout_height="0sp"

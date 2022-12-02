@@ -36,7 +36,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:text="Name" />
+                android:text="Gate adresse" />
 
             <Button
                 android:id="@+id/sokBtn"

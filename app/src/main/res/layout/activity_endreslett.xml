@@ -25,6 +25,13 @@
                 android:textSize="35sp" />
 
             <TextView
+                android:id="@+id/responsTekst"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#4CAF50"
+                android:textSize="24sp" />
+
+            <TextView
                 android:id="@+id/servId"
                 android:layout_width="match_parent"
                 android:layout_height="0sp"
@@ -53,7 +60,7 @@
                 android:id="@+id/gateAddresse"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:editable="false"
+                android:editable="true"
                 android:ems="10" />
 
             <TextView
@@ -85,6 +92,13 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="#D84036"
                 android:text="Slett" />
+
+            <Button
+                android:id="@+id/resetBtn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="#03A9F4"
+                android:text="Reset" />
 
         </LinearLayout>
     </ScrollView>

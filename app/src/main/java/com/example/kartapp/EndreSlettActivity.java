@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
@@ -23,6 +24,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.kartapp.database.DbHandlerSeverdighet;
+import com.example.kartapp.database.models.Severdighet;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -67,22 +70,41 @@ public class EndreSlettActivity extends AppCompatActivity implements
     EditText gateAddresseTxtEdit;
     Button endreBtn;
     Button deleteBtn;
+    Button resetBtn;
+    DbHandlerSeverdighet dbHelperSeverdighet;
+    SQLiteDatabase db;
+
+    private void slettSeverdighetDB(){
+        dbHelperSeverdighet.slettSeverdighet(db, Double.parseDouble(lat),Double.parseDouble(lng));
+    }
+    private void oppdaterSeverdighetDB(){
+        Severdighet severdighet= new Severdighet();
+
+        severdighet.setLng(Double.valueOf(lng));
+        severdighet.setLat(Double.valueOf(lat));
+        severdighet.setBeskrivelse(beskrivelse);
+        severdighet.setGateadresse(gateaddresse);
+        dbHelperSeverdighet.oppdaterSeverdighet(db, severdighet);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_endreslett);
         ActionBar actionBar = getSupportActionBar();
-
+        dbHelperSeverdighet = new DbHandlerSeverdighet(this);
+        db=dbHelperSeverdighet.getWritableDatabase();
+        dbHelperSeverdighet.onCreate(db);
         actionBar.setDisplayHomeAsUpEnabled(true);
-
+        TextView responsTekst;
         lat = getIntent().getStringExtra("lat");
         lng = getIntent().getStringExtra("lng");
         gateaddresse = getIntent().getStringExtra("gateadresse");
         beskrivelse = getIntent().getStringExtra("beskrivelse");
-
+        responsTekst = (TextView) findViewById(R.id.responsTekst);
         gateAddresseTxtEdit = (EditText) findViewById(R.id.gateAddresse);
         beskrivelseInp = (EditText) findViewById(R.id.beskrivelseInp);
         endreBtn = (Button) findViewById(R.id.endreBtn);
+        Button deleteBtn = (Button) findViewById(R.id.resetBtn);
         deleteBtn = (Button) findViewById(R.id.deleteBtn);
         gateAddresseTxtEdit.setText(gateaddresse);
         beskrivelseInp.setText(beskrivelse);
@@ -91,8 +113,19 @@ public class EndreSlettActivity extends AppCompatActivity implements
             public void onClick(View view) {
 
                 String beskrivelse = String.valueOf(beskrivelseInp.getText());
+                String gateaddresse = String.valueOf(gateAddresseTxtEdit.getText());
                 updateJSON task = new updateJSON(lat,lng,gateaddresse,beskrivelse);
                 task.execute();
+                oppdaterSeverdighetDB();
+                responsTekst.setText("Severdigheten er endret");
+            }
+        });
+        resetBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                beskrivelseInp.setText(beskrivelse);
+                gateAddresseTxtEdit.setText(gateaddresse);
             }
         });
         deleteBtn.setOnClickListener(new View.OnClickListener() {
@@ -101,6 +134,8 @@ public class EndreSlettActivity extends AppCompatActivity implements
 
                 deleteJson task = new deleteJson(lat,lng);
                 task.execute();
+                slettSeverdighetDB();
+                responsTekst.setText("Severdigheten er slettet");
             }
         });
         gateAddresseTxtEdit.setText(gateaddresse);
@@ -393,6 +428,10 @@ public class EndreSlettActivity extends AppCompatActivity implements
 
     };
 
-
+    @Override
+    protected void onDestroy() {
+        dbHelperSeverdighet.close();
+        super.onDestroy();
+    }
 
 }
