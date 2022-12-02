@@ -25,7 +25,7 @@ public class EndreSlettDialog extends DialogFragment {
     }
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return new AlertDialog.Builder(getActivity()).setTitle(R.string.title).setPositiveButton(R.string.endre, new DialogInterface.OnClickListener() {
+        return new AlertDialog.Builder(getActivity()).setTitle(R.string.titleEndreSlett).setPositiveButton(R.string.endre, new DialogInterface.OnClickListener() {
         public void onClick(DialogInterface dialog, int whichButton){ callback.onEndreClick(); }} ).setNegativeButton(R.string.slett, new DialogInterface.OnClickListener() {public void onClick(DialogInterface dialog, int whichButton){ callback.onSlettClick();}} ) .setNeutralButton(R.string.avbryt, new DialogInterface.OnClickListener() {public void onClick(DialogInterface dialog, int whichButton){ callback.onAvbrytClick();}} ).create();
     }
 

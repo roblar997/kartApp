@@ -2,9 +2,10 @@
     <string name="app_name">kartApp</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="ok">Begynn å lage beskrivelse</string>
-    <string name="ikkeok">Nei</string>
+    <string name="ikkeok">Avbryt</string>
     <string name="endre">Endre</string>
     <string name="slett">Slett</string>
     <string name="avbryt">Avbryt</string>
-    <string name="title">Vil du lagre en ny severdighet på denne gps-lokasjon?</string>
+    <string name="title">Ny severdighet på gitt gps-lokasjon</string>
+    <string name="titleEndreSlett">Sletting og endring av severdighet</string>
 </resources>
