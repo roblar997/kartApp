@@ -93,7 +93,7 @@ public class EndreSlettActivity extends AppCompatActivity implements
         ActionBar actionBar = getSupportActionBar();
         dbHelperSeverdighet = new DbHandlerSeverdighet(this);
         db=dbHelperSeverdighet.getWritableDatabase();
-        dbHelperSeverdighet.onCreate(db);
+
         actionBar.setDisplayHomeAsUpEnabled(true);
         TextView responsTekst;
         lat = getIntent().getStringExtra("lat");
@@ -112,8 +112,8 @@ public class EndreSlettActivity extends AppCompatActivity implements
             @Override
             public void onClick(View view) {
 
-                String beskrivelse = String.valueOf(beskrivelseInp.getText());
-                String gateaddresse = String.valueOf(gateAddresseTxtEdit.getText());
+                beskrivelse = String.valueOf(beskrivelseInp.getText());
+                gateaddresse = String.valueOf(gateAddresseTxtEdit.getText());
                 updateJSON task = new updateJSON(lat,lng,gateaddresse,beskrivelse);
                 task.execute();
                 oppdaterSeverdighetDB();
@@ -207,7 +207,7 @@ public class EndreSlettActivity extends AppCompatActivity implements
             String output = "";
 
             try{
-                URL urlen= new URL("http://192.168.242.77:82/jsonDelete.php?lat="+lat+"&lng="+lng);
+                URL urlen= new URL("http://data1500.cs.oslomet.no/~s349967/jsonDelete.php?lat="+lat+"&lng="+lng);
                 HttpURLConnection conn= (HttpURLConnection)
                         urlen.openConnection();
                 conn.setRequestMethod("GET");
@@ -267,11 +267,11 @@ public class EndreSlettActivity extends AppCompatActivity implements
             String output = "";
 
             try{
-                URL urlen= new URL("http://192.168.242.77:82/jsonUpdate.php?lat="+lat+"&lng="+lng+"&gateadresse="+gateaddresse.replaceAll(" ","%20")+"&beskrivelse="+beskrivelse.replaceAll(" ","%20"));
+                URL urlen= new URL("http://data1500.cs.oslomet.no/~s349967/jsonUpdate.php?lat="+lat+"&lng="+lng+"&gateadresse="+gateaddresse.replaceAll(" ","%20")+"&beskrivelse="+beskrivelse.replaceAll(" ","%20"));
                 HttpURLConnection conn= (HttpURLConnection)
                         urlen.openConnection();
                 conn.setRequestMethod("GET");
-                conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
+                conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,applicaton/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
                 if (conn.getResponseCode() != 200) {
                     System.out.println(conn.getResponseCode());
                     throw new RuntimeException("Failed : HTTP errorcode: "

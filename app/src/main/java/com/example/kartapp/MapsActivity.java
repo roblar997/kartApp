@@ -213,7 +213,7 @@ public class MapsActivity extends AppCompatActivity implements
         mMap.clear();
         getJSON getJSONTask = new getJSON();
         try {
-            String res = getJSONTask.execute(new String[]{"http://192.168.242.77:82/jsonout.php"}).get();
+            String res = getJSONTask.execute(new String[]{"http://data1500.cs.oslomet.no:80/~s349967/jsonout.php"}).get();
             System.out.println(res);
             JSONArray jsonObject = new JSONArray(res);
             for (int i = 0; i < jsonObject.length(); i++) {
@@ -276,7 +276,7 @@ public class MapsActivity extends AppCompatActivity implements
             String output = "";
 
             try{
-                URL urlen= new URL("http://192.168.242.77:82/jsonDelete.php?lat="+lat+"&lng="+lng);
+                URL urlen= new URL("http://data1500.cs.oslomet.no/~s349967/jsonDelete.php?lat="+lat+"&lng="+lng);
                 HttpURLConnection conn= (HttpURLConnection)
                         urlen.openConnection();
                 conn.setRequestMethod("GET");
@@ -494,7 +494,7 @@ public class MapsActivity extends AppCompatActivity implements
         mMap = googleMap;
         getJSON task = new getJSON();
         try {
-            String res = task.execute(new String[]{"http://192.168.242.77:82/jsonout.php"}).get();
+            String res = task.execute(new String[]{"http://data1500.cs.oslomet.no/~s349967/jsonout.php"}).get();
             System.out.println(res);
             JSONArray jsonObject = new JSONArray(res);
             for (int i = 0; i < jsonObject.length(); i++) {
@@ -503,7 +503,7 @@ public class MapsActivity extends AppCompatActivity implements
                 double lat = jsonobject.getDouble("lng");
                 String beskrivelse = jsonobject.getString("beskrivelse");
                 String gateadresse = jsonobject.getString("gateadresse");
-                LatLng latLng = new LatLng(lng, lat);
+               LatLng latLng = new LatLng(lng, lat);
                 System.out.println(beskrivelse);
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng)

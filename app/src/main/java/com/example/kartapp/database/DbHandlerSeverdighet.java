@@ -30,12 +30,10 @@ public class DbHandlerSeverdighet extends SQLiteOpenHelper {
 
     public int oppdaterSeverdighet(SQLiteDatabase db, Severdighet severdighet) {
         ContentValues values = new ContentValues();
-        values.put(KEY_LAT,severdighet.getLat());
-        values.put(KEY_LNG, severdighet.getLng());
         values.put(KEY_BESKRIVELSE, severdighet.getBeskrivelse());
         values.put(KEY_GATEADRESSE, severdighet.getGateadresse());
-        int endret = db.update(TABLE_SEVERDIGHETER , values, KEY_LAT + "= ? AND " + KEY_LNG + " = ?",
-                new String[]{Double.toString(severdighet.getLat()),Double.toString(severdighet.getLng())});
+        int endret = db.update(TABLE_SEVERDIGHETER , values, KEY_LAT + " = " + severdighet.getLat() + " AND " + KEY_LNG + " = " + severdighet.getLng() ,
+                null);
         return endret;
     }
     @Override
@@ -48,8 +46,8 @@ public class DbHandlerSeverdighet extends SQLiteOpenHelper {
     }
     public void slettSeverdighet(SQLiteDatabase db, Double inn_lat, Double inn_lng) {
 
-        db.delete(TABLE_SEVERDIGHETER , KEY_LAT + " = ? AND " + KEY_LNG + " = ?",
-                new String[]{Double.toString(inn_lat),Double.toString(inn_lng)});
+        db.delete(TABLE_SEVERDIGHETER , KEY_LAT + "= " + Double.toString(inn_lat) + " AND " + KEY_LNG + "= " + Double.toString(inn_lng),
+               null);
     }
 
 
@@ -80,8 +78,8 @@ public class DbHandlerSeverdighet extends SQLiteOpenHelper {
 
     public void leggTilSeverdighet(SQLiteDatabase db, Severdighet severdighet) {
         ContentValues values = new ContentValues();
-        values.put(KEY_LNG,  severdighet.getLng());
         values.put(KEY_LAT, severdighet.getLat());
+        values.put(KEY_LNG,  severdighet.getLng());
         values.put(KEY_GATEADRESSE, severdighet.getGateadresse());
         values.put(KEY_BESKRIVELSE, severdighet.getBeskrivelse());
         db.insert(TABLE_SEVERDIGHETER , null, values);
