@@ -499,11 +499,11 @@ public class MapsActivity extends AppCompatActivity implements
             JSONArray jsonObject = new JSONArray(res);
             for (int i = 0; i < jsonObject.length(); i++) {
                 JSONObject jsonobject = jsonObject.getJSONObject(i);
-                double lng = jsonobject.getDouble("lat");
-                double lat = jsonobject.getDouble("lng");
+                double lng = jsonobject.getDouble("lng");
+                double lat = jsonobject.getDouble("lat");
                 String beskrivelse = jsonobject.getString("beskrivelse");
                 String gateadresse = jsonobject.getString("gateadresse");
-               LatLng latLng = new LatLng(lng, lat);
+               LatLng latLng = new LatLng(lat, lng);
                 System.out.println(beskrivelse);
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng)
@@ -548,6 +548,7 @@ public class MapsActivity extends AppCompatActivity implements
         protected String doInBackground(Void... params) {
             String s = "";
             String output = "";
+            System.out.println(address);
             String query = "https://maps.googleapis.com/maps/api/geocode/json?address="+
              address.replaceAll(" ", "%20") + "&key=AIzaSyA7kkXcZ4w6rEBFWJy2X0dWuMzC9g_rJjk";
             try {
@@ -558,6 +559,7 @@ public class MapsActivity extends AppCompatActivity implements
                 if (conn.getResponseCode() != 200) {
                     throw new RuntimeException("Failed : HTTP error code : "
                             + conn.getResponseCode());
+
                 }
                 BufferedReader br = new BufferedReader(new
                         InputStreamReader((conn.getInputStream())));

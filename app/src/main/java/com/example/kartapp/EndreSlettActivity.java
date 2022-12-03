@@ -77,15 +77,7 @@ public class EndreSlettActivity extends AppCompatActivity implements
     private void slettSeverdighetDB(){
         dbHelperSeverdighet.slettSeverdighet(db, Double.parseDouble(lat),Double.parseDouble(lng));
     }
-    private void oppdaterSeverdighetDB(){
-        Severdighet severdighet= new Severdighet();
 
-        severdighet.setLng(Double.valueOf(lng));
-        severdighet.setLat(Double.valueOf(lat));
-        severdighet.setBeskrivelse(beskrivelse);
-        severdighet.setGateadresse(gateaddresse);
-        dbHelperSeverdighet.oppdaterSeverdighet(db, severdighet);
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,7 +108,13 @@ public class EndreSlettActivity extends AppCompatActivity implements
                 gateaddresse = String.valueOf(gateAddresseTxtEdit.getText());
                 updateJSON task = new updateJSON(lat,lng,gateaddresse,beskrivelse);
                 task.execute();
-                oppdaterSeverdighetDB();
+                Severdighet severdighet= new Severdighet();
+
+                severdighet.setLng(Double.valueOf(lng));
+                severdighet.setLat(Double.valueOf(lat));
+                severdighet.setBeskrivelse(beskrivelse);
+                severdighet.setGateadresse(gateaddresse);
+                dbHelperSeverdighet.oppdaterSeverdighet(db, severdighet);
                 responsTekst.setText("Severdigheten er endret");
             }
         });
@@ -284,15 +282,9 @@ public class EndreSlettActivity extends AppCompatActivity implements
                     output = output + s;
                 }
                 conn.disconnect();
-                try{
-                    JSONArray mat = new JSONArray(output);
 
+                    return "ok";
 
-                    return mat.toString();
-                } catch(JSONException e) {
-                    e.printStackTrace();
-                }
-                return retur;
             } catch(Exception e) {
                 return e.getLocalizedMessage();
             }
