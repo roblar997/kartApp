@@ -88,7 +88,9 @@ public class MapsActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_maps);
         dbHelperSeverdighet = new DbHandlerSeverdighet(this);
         db=dbHelperSeverdighet.getWritableDatabase();
+
         dbHelperSeverdighet.onCreate(db);
+
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -394,6 +396,12 @@ public class MapsActivity extends AppCompatActivity implements
         double currentLongitude = location.getLongitude();
         LatLng latLng = new LatLng(currentLatitude, currentLongitude);
 
+        MarkerOptions options = new MarkerOptions()
+                .position(latLng)
+                .title("Jeg er her!");
+        mMap.addMarker(options);
+       // mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
     }
 
     @Override
@@ -504,7 +512,7 @@ public class MapsActivity extends AppCompatActivity implements
                 String beskrivelse = jsonobject.getString("beskrivelse");
                 String gateadresse = jsonobject.getString("gateadresse");
                LatLng latLng = new LatLng(lat, lng);
-                System.out.println(beskrivelse);
+
                 MarkerOptions options = new MarkerOptions()
                         .position(latLng)
                         .title(gateadresse)
