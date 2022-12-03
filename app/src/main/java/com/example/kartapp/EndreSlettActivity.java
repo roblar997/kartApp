@@ -24,8 +24,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.kartapp.database.DbHandlerSeverdighet;
-import com.example.kartapp.database.models.Severdighet;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -71,20 +70,13 @@ public class EndreSlettActivity extends AppCompatActivity implements
     Button endreBtn;
     Button deleteBtn;
     Button resetBtn;
-    DbHandlerSeverdighet dbHelperSeverdighet;
-    SQLiteDatabase db;
 
-    private void slettSeverdighetDB(){
-        dbHelperSeverdighet.slettSeverdighet(db, Double.parseDouble(lat),Double.parseDouble(lng));
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_endreslett);
         ActionBar actionBar = getSupportActionBar();
-        dbHelperSeverdighet = new DbHandlerSeverdighet(this);
-        db=dbHelperSeverdighet.getWritableDatabase();
 
         actionBar.setDisplayHomeAsUpEnabled(true);
         TextView responsTekst;
@@ -108,13 +100,7 @@ public class EndreSlettActivity extends AppCompatActivity implements
                 gateaddresse = String.valueOf(gateAddresseTxtEdit.getText());
                 updateJSON task = new updateJSON(lat,lng,gateaddresse,beskrivelse);
                 task.execute();
-                Severdighet severdighet= new Severdighet();
 
-                severdighet.setLng(Double.valueOf(lng));
-                severdighet.setLat(Double.valueOf(lat));
-                severdighet.setBeskrivelse(beskrivelse);
-                severdighet.setGateadresse(gateaddresse);
-                dbHelperSeverdighet.oppdaterSeverdighet(db, severdighet);
                 responsTekst.setText("Severdigheten er endret");
             }
         });
@@ -132,7 +118,7 @@ public class EndreSlettActivity extends AppCompatActivity implements
 
                 deleteJson task = new deleteJson(lat,lng);
                 task.execute();
-                slettSeverdighetDB();
+
                 responsTekst.setText("Severdigheten er slettet");
             }
         });
@@ -422,7 +408,6 @@ public class EndreSlettActivity extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        dbHelperSeverdighet.close();
         super.onDestroy();
     }
 

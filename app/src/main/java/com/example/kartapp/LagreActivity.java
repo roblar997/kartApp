@@ -24,8 +24,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.kartapp.database.DbHandlerSeverdighet;
-import com.example.kartapp.database.models.Severdighet;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -71,21 +69,13 @@ public class LagreActivity extends AppCompatActivity implements
     EditText gateAddresseTxtEdit;
     Button leggtilBtn;
 
-    DbHandlerSeverdighet dbHelperSeverdighet;
-    SQLiteDatabase db;
 
-    public void leggtilSeverdighetDB(){
-        Severdighet severdighet = new Severdighet(Double.parseDouble(lat),Double.parseDouble(lng),gateaddresse,beskrivelseInp.getText().toString());
-        dbHelperSeverdighet.leggTilSeverdighet(db,severdighet);
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lagre);
         ActionBar actionBar = getSupportActionBar();
-        dbHelperSeverdighet = new DbHandlerSeverdighet(this);
-        db=dbHelperSeverdighet.getWritableDatabase();
-        dbHelperSeverdighet.onCreate(db);
+
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         lat = getIntent().getStringExtra("lat");
@@ -103,7 +93,7 @@ public class LagreActivity extends AppCompatActivity implements
                 String beskrivelse = String.valueOf(beskrivelseInp.getText());
                 createJSON task = new createJSON(lat,lng,gateaddresse,beskrivelse);
                 task.execute();
-                leggtilSeverdighetDB();
+
                 responsTekst.setText("Severdigheten er lagret");
             }
         });
@@ -183,25 +173,14 @@ public class LagreActivity extends AppCompatActivity implements
                     conn.setRequestMethod("GET");
                     conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
                     if (conn.getResponseCode() != 200) {
-                        System.out.println(conn.getResponseCode());
+
                         throw new RuntimeException("Failed : HTTP errorcode: "
                                 + conn.getResponseCode());
                     }
-                    else{
-                        List<Severdighet> severdighetList = dbHelperSeverdighet.finnAlleSeverdigheter(db);
-                        JSONArray jsonArray = new JSONArray();
-                        for (int i = 0; i < severdighetList.size(); i++){
-                            JSONObject myJsonObject = new JSONObject();
-                            myJsonObject.put("lat", severdighetList.get(i).getLat());
-                            myJsonObject.put("lng",  severdighetList.get(i).getLng());
-                            myJsonObject.put("gateadresse",  severdighetList.get(i).getGateadresse());
-                            myJsonObject.put("beskrivelse",  severdighetList.get(i).getBeskrivelse());
 
-                        }
-                    }
-                    System.out.println("Before reading... .... \n");
+
                     BufferedReader br= new BufferedReader(new InputStreamReader((conn.getInputStream())));
-                    System.out.println("Output from Server .... \n");
+
                     while ((s = br.readLine()) != null) {
                         output = output + s;
                     }
@@ -353,7 +332,6 @@ public class LagreActivity extends AppCompatActivity implements
 
     @Override
     protected void onDestroy() {
-        dbHelperSeverdighet.close();
         super.onDestroy();
     }
     }

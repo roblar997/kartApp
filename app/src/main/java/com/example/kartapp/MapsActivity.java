@@ -24,8 +24,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.kartapp.database.DbHandlerSeverdighet;
-import com.example.kartapp.database.models.Severdighet;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -76,20 +74,13 @@ public class MapsActivity extends AppCompatActivity implements
     Button zoomOutBtn;
     EditText adresseInp;
     Marker tmpMarker;
-    DbHandlerSeverdighet dbHelperSeverdighet;
-    SQLiteDatabase db;
-    private void slettSeverdighetDB(Double lat, Double lng){
-        dbHelperSeverdighet.slettSeverdighet(db, lat,lng);
-    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_maps);
-        dbHelperSeverdighet = new DbHandlerSeverdighet(this);
-        db=dbHelperSeverdighet.getWritableDatabase();
 
-        dbHelperSeverdighet.onCreate(db);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager()
                 .findFragmentById(R.id.map);
@@ -210,7 +201,7 @@ public class MapsActivity extends AppCompatActivity implements
         LatLng latlng = this.tmpMarker.getPosition();
         deleteJson task = new deleteJson(Double.toString(latlng.latitude),Double.toString(latlng.longitude));
         task.execute();
-        slettSeverdighetDB(latlng.latitude,latlng.longitude);
+
 
         mMap.clear();
         getJSON getJSONTask = new getJSON();
@@ -332,20 +323,8 @@ public class MapsActivity extends AppCompatActivity implements
 
                     conn.setRequestProperty("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9");
                     if (conn.getResponseCode() != 200) {
-                        List<Severdighet> severdighetList = dbHelperSeverdighet.finnAlleSeverdigheter(db);
-                        JSONArray jsonArray = new JSONArray();
-                        for (int i = 0; i < severdighetList.size(); i++){
-                            System.out.println("TREEEEEEEEEEEEEEEEEEEEE");
-                            JSONObject myJsonObject = new JSONObject();
-                            myJsonObject.put("lat", severdighetList.get(i).getLat());
-                            myJsonObject.put("lng",  severdighetList.get(i).getLng());
-                            myJsonObject.put("gateadresse",  severdighetList.get(i).getGateadresse());
-                            myJsonObject.put("beskrivelse",  severdighetList.get(i).getBeskrivelse());
-                            jsonArray.put(i,myJsonObject);
-
-                        }
-                        System.out.println((jsonArray.toString()));
-                        return jsonArray.toString();
+                        throw new RuntimeException("Failed : HTTP errorcode: "
+                                + conn.getResponseCode());
                     }
 
                     System.out.println("Before reading... .... \n");
@@ -596,7 +575,6 @@ public class MapsActivity extends AppCompatActivity implements
     }
     @Override
     protected void onDestroy() {
-        dbHelperSeverdighet.close();
         super.onDestroy();
     }
 }
