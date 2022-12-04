@@ -184,9 +184,10 @@ public class AddresseListeActivity extends AppCompatActivity implements
                 for (int i = 0; i < result.length(); i++) {
                     //Får gateaddresse, Postnummer, land
                     // hvis gateadresse.
-                    String[] delerAvAddresse = result.getJSONObject(i).getString("formatted_address").split(",");
+                    String adresse = result.getJSONObject(i).getString("formatted_address");
+                    String[] delerAvAddresse = adresse.split(",");
                     if(delerAvAddresse.length == 3){
-                        toReturn.add(delerAvAddresse[0]);
+                        toReturn.add(adresse);
                     }
 
                 }
