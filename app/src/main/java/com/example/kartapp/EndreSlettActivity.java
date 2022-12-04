@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.AsyncTask;
@@ -44,9 +45,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class EndreSlettActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
@@ -98,10 +104,28 @@ public class EndreSlettActivity extends AppCompatActivity implements
 
                 beskrivelse = String.valueOf(beskrivelseInp.getText());
                 gateaddresse = String.valueOf(gateAddresseTxtEdit.getText());
-                updateJSON task = new updateJSON(lat,lng,gateaddresse,beskrivelse);
-                task.execute();
+                String lokasjon = lat + ": " + lng;
+                GetAddressTask taskAdresse = new GetAddressTask(lokasjon);
+                try {
+                    List<String> adresserFullstendig = taskAdresse.execute().get();
+                    List<String> adresserKunAdresse = adresserFullstendig.stream().map((x)->x.split(",")[0]).collect(Collectors.toList());
+                   if(adresserFullstendig.contains(gateaddresse) || adresserKunAdresse.contains(gateaddresse)){
+                       updateJSON task = new updateJSON(lat,lng,gateaddresse,beskrivelse);
+                       task.execute();
 
-                responsTekst.setText("Severdigheten er endret");
+                       responsTekst.setText("Severdigheten er endret");
+                       responsTekst.setTextColor(Color.parseColor("#8BC34A"));
+                   }
+                   else {
+                       responsTekst.setText("Ugyldig adresse");
+                       responsTekst.setTextColor(Color.parseColor("#D84036"));
+                   }
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
         resetBtn.setOnClickListener(new View.OnClickListener() {
@@ -332,6 +356,69 @@ public class EndreSlettActivity extends AppCompatActivity implements
         });
 
 
+    }
+    private class GetAddressTask extends AsyncTask<Void, Void, List<String>> {
+        JSONObject jsonObject;
+
+        String lokasjon;
+
+        public GetAddressTask(String lokasjon) {
+            this.lokasjon = lokasjon;
+        }
+
+        @Override
+        protected List<String> doInBackground(Void... params) {
+            String s = "";
+            String output = "";
+            if(lokasjon == null)
+                return new ArrayList<String>();
+
+            String lat = lokasjon.split(":")[0].replaceAll(",", ".");
+            String lng = lokasjon.split(":")[1].replaceAll(",", ".");
+            String query = "https://maps.googleapis.com/maps/api/geocode/json?latlng=" + lat + "," + lng + "&key=AIzaSyA7kkXcZ4w6rEBFWJy2X0dWuMzC9g_rJjk";
+            try {
+                System.out.println("addressTask");
+                URL urlen = new URL(query);
+                HttpURLConnection conn = (HttpURLConnection) urlen.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setRequestProperty("Accept", "application/json");
+                if (conn.getResponseCode() != 200) {
+
+                    throw new RuntimeException("Failed : HTTP error code : "
+                            + conn.getResponseCode());
+                }
+
+                BufferedReader br = new BufferedReader(new
+                        InputStreamReader((conn.getInputStream())));
+                while ((s = br.readLine()) != null) {
+                    output = output + s;
+                }
+                jsonObject = new JSONObject(output.toString());
+                conn.disconnect();
+                String status = jsonObject.getString("status");
+                if (!status.equals("OK"))
+                    throw new JSONException("JSON status was not set to OK");
+                JSONArray result = jsonObject.getJSONArray("results");
+                List<String> toReturn = new ArrayList<String>();
+
+                for (int i = 0; i < result.length(); i++) {
+                    //Får gateaddresse, Postnummer, land
+                    // hvis gateadresse.
+                    String adresse = result.getJSONObject(i).getString("formatted_address");
+                    String[] delerAvAddresse = adresse.split(",");
+                    if(delerAvAddresse.length == 3){
+                        toReturn.add(adresse);
+                    }
+
+                }
+                return toReturn.stream().distinct().collect(Collectors.toList());
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            }
+            return new ArrayList<String>();
+        }
     }
     @SuppressLint("MissingPermission")
     private void requestNewLocationData() {
