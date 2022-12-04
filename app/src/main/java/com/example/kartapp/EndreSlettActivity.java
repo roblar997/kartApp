@@ -144,6 +144,8 @@ public class EndreSlettActivity extends AppCompatActivity implements
                 task.execute();
 
                 responsTekst.setText("Severdigheten er slettet");
+                Intent mainIntent= new Intent(EndreSlettActivity.this, MapsActivity.class);
+                startActivity(mainIntent);
             }
         });
         gateAddresseTxtEdit.setText(gateaddresse);
